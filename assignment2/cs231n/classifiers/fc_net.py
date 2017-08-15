@@ -193,7 +193,7 @@ class FullyConnectedNet(object):
                        
             
             
-        for i in xrange(1, self.num_layers - 1):
+        for i in range(1, self.num_layers - 1):
             self.params['W%d' % (i+1)] = weight_scale * np.random.randn(hidden_dims[i - 1], hidden_dims[i])
             self.params['b%d' % (i+1)] = np.zeros(hidden_dims[i])
             if self.use_batchnorm:
@@ -274,7 +274,7 @@ class FullyConnectedNet(object):
             
         
         
-        for i in xrange(2, self.num_layers):
+        for i in range(2, self.num_layers):
             # Take outputs from previous layers
             out, cache['affine%d' % i ] = affine_forward(out, self.params['W%d' % i], \
                                                  self.params['b%d' % i])
@@ -323,11 +323,12 @@ class FullyConnectedNet(object):
                                                                    
         
         
-        for i in xrange(self.num_layers - 1, 0, -1):
+        for i in range(self.num_layers - 1, 0, -1):
+            
+            loss += 0.5*self.reg*np.sum(self.params['W%d' % i]**2)
+            
             if self.use_dropout:
                 dHID = dropout_backward(dHID, cache['dropout%d' % i])
-                dHID, dW, db = affine_relu_backward(dHID, cache[i - 1][0])
-                
             dHID = relu_backward(dHID, cache['relu%d' % i])
             
             if self.use_batchnorm:
@@ -335,7 +336,7 @@ class FullyConnectedNet(object):
 
             dHID, dW, db = affine_backward(dHID, cache['affine%d' % i])
                 
-            loss += 0.5*self.reg*np.sum(self.params['W%d' % i]**2)
+            
             
             dW += self.reg * cache['affine%d' % i][1]                                                       
             grads['W%d' % i] = dW
